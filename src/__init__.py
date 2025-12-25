@@ -13,6 +13,7 @@ from . import data_preparation
 from . import baseline_model
 from . import ensemble_model
 from . import cross_validation
+from . import model_comparison
 
 # Import commonly used functions for convenience
 from .data_loader import (
@@ -75,6 +76,12 @@ from .cross_validation import (
     CrossValidationResults
 )
 
+from .model_comparison import (
+    ModelComparator,
+    ModelComparisonEntry,
+    ModelComparisonResults
+)
+
 __all__ = [
     # Modules
     'data_loader',
@@ -85,6 +92,7 @@ __all__ = [
     'baseline_model',
     'ensemble_model',
     'cross_validation',
+    'model_comparison',
     
     # Data loading functions
     'load_csv',
@@ -137,6 +145,11 @@ __all__ = [
     # Cross-validation classes
     'CrossValidator',
     'CrossValidationResults',
+    
+    # Model comparison classes
+    'ModelComparator',
+    'ModelComparisonEntry',
+    'ModelComparisonResults',
 ]
 
 __version__ = '1.0.0'
