@@ -9,6 +9,8 @@ from . import data_loader
 from . import preprocessing
 from . import modeling
 from . import analysis
+from . import data_preparation
+from . import baseline_model
 
 # Import commonly used functions for convenience
 from .data_loader import (
@@ -51,12 +53,24 @@ from .analysis import (
     generate_risk_summary_report
 )
 
+from .data_preparation import (
+    DataPreparation,
+    DataSplitResult
+)
+
+from .baseline_model import (
+    BaselineModel,
+    BaselineModelResults
+)
+
 __all__ = [
     # Modules
     'data_loader',
     'preprocessing',
     'modeling',
     'analysis',
+    'data_preparation',
+    'baseline_model',
     
     # Data loading functions
     'load_csv',
@@ -93,6 +107,14 @@ __all__ = [
     'analyze_source_vs_fraud',
     'analyze_browser_vs_fraud',
     'generate_risk_summary_report',
+    
+    # Data preparation classes
+    'DataPreparation',
+    'DataSplitResult',
+    
+    # Baseline model classes
+    'BaselineModel',
+    'BaselineModelResults',
 ]
 
 __version__ = '1.0.0'
