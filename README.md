@@ -9,6 +9,8 @@ A production-ready machine learning solution for fraud detection in e-commerce a
 
 Fraud Shield ML provides an end-to-end pipeline for building, training, and deploying fraud detection models. The project emphasizes **interpretability**, **reliability**, and **production-readiness** through object-oriented design, comprehensive error handling, and rigorous evaluation methodologies.
 
+**Business Value**: Each module is designed to address specific business objectives—minimizing financial losses, maintaining customer experience, ensuring regulatory compliance, and enabling operational efficiency. See [BUSINESS_OBJECTIVES.md](BUSINESS_OBJECTIVES.md) for detailed module-to-business mapping.
+
 **Key Capabilities:**
 - 🔍 **Data Analysis**: Risk pattern analysis with bivariate insights and statistical validation
 - 🛠️ **Data Preprocessing**: Missing value handling, feature engineering, scaling, and resampling
@@ -23,11 +25,13 @@ Fraud Shield ML provides an end-to-end pipeline for building, training, and depl
 
 - **Object-Oriented Design**: Reusable, professional classes following industry best practices
 - **Production-Ready**: Comprehensive error handling, validation, and logging
+- **Business-Aligned**: Modules designed to address specific business objectives (see [BUSINESS_OBJECTIVES.md](BUSINESS_OBJECTIVES.md))
 - **Data Analysis**: Risk pattern analysis with statistical validation and stakeholder-friendly interpretations
 - **Advanced Preprocessing**: Feature engineering, scaling, encoding, and imbalanced data handling
-- **Model Interpretability**: Built-in interpretability scoring and SHAP integration support
+- **Model Interpretability**: Built-in interpretability scoring for regulatory compliance
 - **Comprehensive Evaluation**: Multiple metrics with cross-validation support
 - **Modular Architecture**: Clean separation of concerns for maintainability
+- **Test Coverage**: Explicit unit tests for all core modules
 
 ## Tech Stack
 
@@ -269,6 +273,39 @@ python scripts/comprehensive_model_comparison.py --dataset banking
 # Specify output directory
 python scripts/comprehensive_model_comparison.py --dataset ecommerce --output-dir reports
 ```
+
+## Business Alignment
+
+Each module is designed to address specific business objectives:
+
+- **Minimize Financial Losses**: Ensemble models with high F1-Score reduce missed fraud
+- **Maintain Customer Experience**: Model comparison balances false positives vs. false negatives
+- **Regulatory Compliance**: Interpretability scoring ensures explainable models for compliance
+- **Operational Efficiency**: Automated pipelines reduce manual review workload
+- **Risk Pattern Identification**: Analysis modules identify high-risk patterns for proactive prevention
+
+See [BUSINESS_OBJECTIVES.md](BUSINESS_OBJECTIVES.md) for detailed module-to-business mapping and success criteria.
+
+## Testing
+
+Run the test suite to verify functionality:
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=src --cov-report=html
+
+# Run specific test file
+pytest tests/test_baseline_model.py -v
+```
+
+Test coverage includes:
+- Data preparation and validation
+- Baseline and ensemble model training
+- Cross-validation functionality
+- Model comparison and selection
 
 ## Contributing
 
