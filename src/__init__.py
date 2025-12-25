@@ -9,6 +9,11 @@ from . import data_loader
 from . import preprocessing
 from . import modeling
 from . import analysis
+from . import data_preparation
+from . import baseline_model
+from . import ensemble_model
+from . import cross_validation
+from . import model_comparison
 
 # Import commonly used functions for convenience
 from .data_loader import (
@@ -51,12 +56,43 @@ from .analysis import (
     generate_risk_summary_report
 )
 
+from .data_preparation import (
+    DataPreparation,
+    DataSplitResult
+)
+
+from .baseline_model import (
+    BaselineModel,
+    BaselineModelResults
+)
+
+from .ensemble_model import (
+    EnsembleModel,
+    EnsembleModelResults
+)
+
+from .cross_validation import (
+    CrossValidator,
+    CrossValidationResults
+)
+
+from .model_comparison import (
+    ModelComparator,
+    ModelComparisonEntry,
+    ModelComparisonResults
+)
+
 __all__ = [
     # Modules
     'data_loader',
     'preprocessing',
     'modeling',
     'analysis',
+    'data_preparation',
+    'baseline_model',
+    'ensemble_model',
+    'cross_validation',
+    'model_comparison',
     
     # Data loading functions
     'load_csv',
@@ -93,6 +129,27 @@ __all__ = [
     'analyze_source_vs_fraud',
     'analyze_browser_vs_fraud',
     'generate_risk_summary_report',
+    
+    # Data preparation classes
+    'DataPreparation',
+    'DataSplitResult',
+    
+    # Baseline model classes
+    'BaselineModel',
+    'BaselineModelResults',
+    
+    # Ensemble model classes
+    'EnsembleModel',
+    'EnsembleModelResults',
+    
+    # Cross-validation classes
+    'CrossValidator',
+    'CrossValidationResults',
+    
+    # Model comparison classes
+    'ModelComparator',
+    'ModelComparisonEntry',
+    'ModelComparisonResults',
 ]
 
 __version__ = '1.0.0'
