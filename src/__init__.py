@@ -11,6 +11,7 @@ from . import modeling
 from . import analysis
 from . import data_preparation
 from . import baseline_model
+from . import ensemble_model
 
 # Import commonly used functions for convenience
 from .data_loader import (
@@ -63,6 +64,11 @@ from .baseline_model import (
     BaselineModelResults
 )
 
+from .ensemble_model import (
+    EnsembleModel,
+    EnsembleModelResults
+)
+
 __all__ = [
     # Modules
     'data_loader',
@@ -71,6 +77,7 @@ __all__ = [
     'analysis',
     'data_preparation',
     'baseline_model',
+    'ensemble_model',
     
     # Data loading functions
     'load_csv',
@@ -115,6 +122,10 @@ __all__ = [
     # Baseline model classes
     'BaselineModel',
     'BaselineModelResults',
+    
+    # Ensemble model classes
+    'EnsembleModel',
+    'EnsembleModelResults',
 ]
 
 __version__ = '1.0.0'
