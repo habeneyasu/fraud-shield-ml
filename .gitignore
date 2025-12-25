@@ -39,11 +39,21 @@ ENV/
 # Data files (add this folder to .gitignore as requested)
 data/
 
+# Documentation (exclude all except README.md)
+INTERIM_REPORT_1.md
+CONTRIBUTING.md
+BUSINESS_OBJECTIVES.md
 # Models
 models/*.pkl
 models/*.joblib
 models/*.h5
 models/*.pb
+
+# Reports (keep README.md)
+reports/*.txt
+reports/*.json
+reports/*.html
+reports/*.pdf
 
 # Environment variables
 .env
