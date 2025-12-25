@@ -1,382 +1,251 @@
 # Fraud Shield ML
 
-**A comprehensive machine learning solution for fraud detection in e-commerce and banking transactions.**
+A production-ready machine learning solution for fraud detection in e-commerce and banking transactions, featuring interpretable models, comprehensive evaluation, and explainable AI.
 
-Fraud Shield ML is an advanced machine learning project designed to detect and prevent fraudulent activities across e-commerce platforms and banking systems. This project leverages state-of-the-art ML algorithms, feature engineering techniques, and explainable AI to build robust fraud detection models that can identify suspicious transactions in real-time.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-## 🎯 Overview
+## Overview
 
-Fraud Shield ML provides a complete end-to-end pipeline for fraud detection, from exploratory data analysis to model deployment. The project is specifically tailored for:
+Fraud Shield ML provides an end-to-end pipeline for building, training, and deploying fraud detection models. The project emphasizes **interpretability**, **reliability**, and **production-readiness** through object-oriented design, comprehensive error handling, and rigorous evaluation methodologies.
 
-- **E-commerce Fraud Detection**: Identifying fraudulent online transactions, payment fraud, and account takeovers
-- **Banking Fraud Detection**: Detecting credit card fraud, unauthorized transactions, and suspicious banking activities
+**Key Capabilities:**
+- 🔍 **Data Analysis**: Risk pattern analysis with bivariate insights and statistical validation
+- 🛠️ **Data Preprocessing**: Missing value handling, feature engineering, scaling, and resampling
+- 🎯 **Stratified data preparation** with automatic feature-target separation
+- 📊 **Baseline & ensemble models** (Logistic Regression, Random Forest, XGBoost, LightGBM)
+- 🔧 **Hyperparameter tuning** with GridSearchCV and RandomizedSearchCV
+- ✅ **Cross-validation** with Stratified K-Fold for reliable performance estimation
+- 🏆 **Model comparison** considering both performance and interpretability
+- 📈 **Comprehensive metrics** (AUC-PR, F1-Score, ROC-AUC, Confusion Matrix)
 
-## ✨ Features
+## Features
 
-- **Comprehensive EDA**: Detailed exploratory data analysis for fraud datasets
-- **Targeted Risk Analysis**: Bivariate analyses focusing on high-risk patterns (amount, device, source, browser) with narrative interpretations for stakeholders
-- **Advanced Feature Engineering**: Automated feature creation and selection
-- **Multiple ML Models**: Support for XGBoost, LightGBM, Random Forest, and scikit-learn algorithms
-- **Model Explainability**: SHAP-based interpretability for transparent fraud detection
-- **Production-Ready**: Modular code structure with comprehensive error handling and validation
-- **CI/CD Integration**: Automated testing with GitHub Actions
-- **Comprehensive Documentation**: Well-documented notebooks, modules, and contribution guidelines
+- **Object-Oriented Design**: Reusable, professional classes following industry best practices
+- **Production-Ready**: Comprehensive error handling, validation, and logging
+- **Data Analysis**: Risk pattern analysis with statistical validation and stakeholder-friendly interpretations
+- **Advanced Preprocessing**: Feature engineering, scaling, encoding, and imbalanced data handling
+- **Model Interpretability**: Built-in interpretability scoring and SHAP integration support
+- **Comprehensive Evaluation**: Multiple metrics with cross-validation support
+- **Modular Architecture**: Clean separation of concerns for maintainability
 
-## 🛠️ Technologies
+## Tech Stack
 
-- **Python 3.12+**
-- **Machine Learning**: scikit-learn, XGBoost, LightGBM
-- **Explainability**: SHAP
-- **Data Processing**: pandas, numpy, scipy
-- **Visualization**: matplotlib, seaborn, plotly
+- **Python 3.10+**
+- **ML Libraries**: scikit-learn, XGBoost, LightGBM
+- **Data Processing**: pandas, numpy
+- **Visualization**: matplotlib, seaborn
 - **Testing**: pytest
 
-## 📁 Project Structure
-
-```
-fraud-shield-ml/
-├── .vscode/                       # VS Code configuration
-│   └── settings.json
-│
-├── .github/                       # GitHub configuration
-│   └── workflows/
-│       └── unittests.yml          # CI/CD pipeline for automated testing
-│
-├── data/                          # Data directory (gitignored)
-│   ├── raw/                       # Original, unprocessed datasets
-│   │   ├── Fraud_Data.csv         # E-commerce fraud dataset
-│   │   ├── creditcard.csv         # Credit card fraud dataset
-│   │   └── IpAddress_to_Country.csv
-│   └── processed/                 # Cleaned and feature-engineered data
-│       ├── fraud_data_cleaned.csv
-│       └── creditcard_cleaned.csv
-│
-├── notebooks/                     # Jupyter notebooks for exploration
-│   ├── eda-fraud-data.ipynb       # EDA for e-commerce fraud data
-│   ├── eda-creditcard.ipynb       # EDA for credit card data
-│   ├── feature-engineering.ipynb  # Feature engineering pipeline
-│   ├── modeling.ipynb             # Model training and evaluation
-│   ├── shap-explainability.ipynb  # SHAP-based model explainability
-│   └── README.md                  # Notebook documentation
-│
-├── src/                           # Reusable Python modules (production code)
-│   ├── __init__.py                # Package initialization
-│   ├── data_loader.py             # Data loading with error handling
-│   ├── preprocessing.py           # Data preprocessing functions
-│   ├── modeling.py                # Model training and evaluation
-│   ├── analysis.py                # Bivariate risk analysis with narrative interpretations
-│   ├── example_usage.py           # Example workflow demonstration
-│   └── example_bivariate_analysis.py  # Bivariate analysis examples
-│
-├── tests/                         # Unit tests
-│   └── __init__.py
-│
-├── models/                        # Saved model artifacts (gitignored)
-│
-├── scripts/                       # Utility scripts
-│   ├── __init__.py
-│   └── README.md
-│
-├── requirements.txt               # Python dependencies
-├── README.md                      # This file
-├── CONTRIBUTING.md                # Contribution guidelines
-└── .gitignore                     # Git ignore rules
-```
-
-### Directory Descriptions
-
-- **`data/`**: Contains all datasets. Raw data goes in `raw/`, processed data in `processed/`. This directory is gitignored to avoid committing large files.
-- **`notebooks/`**: Jupyter notebooks for exploratory analysis, experimentation, and visualization. Use these for EDA and initial model development.
-- **`src/`**: Production-ready, reusable Python modules with comprehensive error handling and validation. Includes data loading, preprocessing, modeling, and risk analysis capabilities. These modules should be used for any production code or scripts.
-- **`tests/`**: Unit tests for modules in `src/`. Run with `pytest`.
-- **`models/`**: Saved model artifacts (`.joblib` or `.pkl` files). Gitignored to avoid committing large model files.
-- **`scripts/`**: Utility scripts for data processing, model deployment, or automation tasks.
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Python 3.12+** (recommended) or Python 3.10+
-- **pip** package manager
-- **Git** for version control (optional)
+## Quick Start
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/habeneyasu/fraud-shield-ml.git
-   cd fraud-shield-ml
-   ```
+```bash
+# Clone repository
+git clone https://github.com/habeneyasu/fraud-shield-ml.git
+cd fraud-shield-ml
 
-2. **Create and activate a virtual environment**
-   ```bash
-   # Create virtual environment
-   python -m venv venv
-   
-   # Activate virtual environment
-   # On Linux/macOS:
-   source venv/bin/activate
-   # On Windows:
-   venv\Scripts\activate
-   ```
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-3. **Install dependencies**
-   ```bash
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
-4. **Verify installation**
-   ```bash
-   python -c "from src import load_fraud_data, analyze_amount_vs_fraud; print('✓ Installation successful')"
-   ```
-
-5. **Set up Jupyter (for notebooks)**
-   ```bash
-   pip install jupyter
-   jupyter notebook
-   ```
-
-## 📊 Usage
-
-### Typical Workflow
-
-1. **Exploratory Data Analysis** (`notebooks/eda-*.ipynb`)
-   - Load and explore raw datasets
-   - Identify data quality issues
-   - Understand feature distributions
-   - Analyze class imbalance
-
-2. **Risk Pattern Analysis** (`src/analysis.py` or `src/example_bivariate_analysis.py`)
-   - Perform bivariate analyses on high-risk patterns
-   - Identify key risk drivers (amount, device, source, browser)
-   - Generate stakeholder-friendly reports with narrative interpretations
-   - Prioritize fraud prevention actions
-
-3. **Feature Engineering** (`notebooks/feature-engineering.ipynb`)
-   - Create new features based on risk analysis insights
-   - Handle missing values and outliers
-   - Encode categorical variables
-   - Scale numerical features
-
-4. **Model Development** (`notebooks/modeling.ipynb`)
-   - Train multiple models (Random Forest, XGBoost, LightGBM)
-   - Evaluate performance metrics
-   - Tune hyperparameters
-   - Compare model performance
-
-5. **Model Explainability** (`notebooks/shap-explainability.ipynb`)
-   - Analyze feature importance
-   - Explain individual predictions
-   - Generate SHAP visualizations
-
-6. **Production Deployment** (`src/`)
-   - Use production-ready modules with error handling
-   - Write unit tests
-   - Deploy models with monitoring
-
-### Using Reusable Modules
-
-The project includes production-ready modules in `src/` with comprehensive error handling and validation:
-
-#### Data Loading and Preprocessing
-
-```python
-from src.data_loader import load_fraud_data, save_dataframe
-from src.preprocessing import handle_missing_values, scale_features, split_data
-from src.modeling import train_model, evaluate_model, save_model
-
-# Load data with automatic error handling
-df = load_fraud_data(data_dir='data', filename='Fraud_Data.csv')
-
-# Preprocess with validation
-df_clean = handle_missing_values(df, strategy='drop')
-X_scaled, scaler = scale_features(X, scaler_type='standard')
-
-# Split data
-X_train, X_test, y_train, y_test = split_data(X_scaled, y, test_size=0.2)
-
-# Train model
-model = train_model(X_train, y_train, model_type='random_forest')
-
-# Evaluate
-metrics = evaluate_model(model, X_test, y_test)
-print(f"F1 Score: {metrics['f1']:.4f}")
-
-# Save model
-save_model(model, 'models/fraud_model.joblib')
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-#### Risk Analysis and Bivariate Patterns
-
-The analysis module provides targeted bivariate analyses with narrative interpretations for stakeholders:
+### Data Analysis & Preprocessing
 
 ```python
+from src.data_loader import load_fraud_data
+from src.preprocessing import (
+    handle_missing_values, remove_duplicates, encode_categorical,
+    create_transaction_frequency_features, create_preprocessing_pipeline
+)
 from src.analysis import (
-    analyze_amount_vs_fraud,
-    analyze_device_vs_fraud,
-    analyze_source_vs_fraud,
-    analyze_browser_vs_fraud,
+    analyze_amount_vs_fraud, analyze_device_vs_fraud,
     generate_risk_summary_report
 )
 
-# Analyze transaction amount risk
-amount_results = analyze_amount_vs_fraud(
-    df, 
-    amount_column='purchase_value',
-    fraud_column='class'
-)
-# Returns: risk level, interpretation, statistics, and visualizations
+# Load and clean data
+df = load_fraud_data(data_dir='data', filename='Fraud_Data.csv')
+df = handle_missing_values(df, strategy='drop')
+df = remove_duplicates(df)
 
-# Analyze device-level risk patterns
-device_results = analyze_device_vs_fraud(
-    df,
-    device_column='device_id',
-    fraud_column='class',
-    top_n=10
+# Feature engineering
+df = create_transaction_frequency_features(
+    df, windows=['1h', '24h']  # Transaction velocity features
 )
 
-# Generate comprehensive risk summary report
-risk_report = generate_risk_summary_report(
-    df,
-    amount_column='purchase_value',
-    device_column='device_id',
-    source_column='source',
-    browser_column='browser',
-    fraud_column='class'
+# Risk pattern analysis
+amount_risk = analyze_amount_vs_fraud(df)
+device_risk = analyze_device_vs_fraud(df, top_n=10)
+risk_report = generate_risk_summary_report(df)
+
+# Preprocessing pipeline
+pipeline = create_preprocessing_pipeline(
+    scaler_type='standard',
+    resampling_strategy='smote',  # Handle class imbalance
+    random_state=42
 )
 ```
 
-Each analysis function provides:
-- **Visualizations**: Box plots, histograms, bar charts, and scatter plots
-- **Statistical Validation**: Statistical tests and significance metrics
-- **Risk Level Assessment**: CRITICAL, HIGH, MODERATE, or LOW risk classifications
-- **Narrative Interpretations**: Stakeholder-friendly explanations of findings
-- **Actionable Recommendations**: Specific, prioritized actions for fraud prevention
+### Model Training
 
-See `src/example_usage.py` for a complete modeling workflow and `src/example_bivariate_analysis.py` for risk analysis examples.
+```python
+from src.data_preparation import DataPreparation
+from src.baseline_model import BaselineModel
+from src.ensemble_model import EnsembleModel
+from src.cross_validation import CrossValidator
+from src.model_comparison import ModelComparator, ModelComparisonEntry
 
-### Running Analysis Scripts
+# Prepare data
+prep = DataPreparation(dataset_type='ecommerce', test_size=0.2, random_state=42)
+split_result = prep.prepare_and_split(df)
 
-Execute the example scripts to see the modules in action:
+# Train baseline model
+baseline = BaselineModel(class_weight='balanced', random_state=42)
+baseline_results = baseline.train_and_evaluate(
+    split_result.X_train, split_result.y_train,
+    split_result.X_test, split_result.y_test
+)
 
-```bash
-# Run complete modeling workflow example
-python src/example_usage.py
+# Train ensemble model with hyperparameter tuning
+ensemble = EnsembleModel(model_type='random_forest', class_weight='balanced')
+ensemble_results = ensemble.train_and_evaluate(
+    split_result.X_train, split_result.y_train,
+    split_result.X_test, split_result.y_test,
+    param_grid={'n_estimators': [100, 200], 'max_depth': [10, 20, None]},
+    tune_hyperparameters=True, cv=5
+)
 
-# Run bivariate risk analysis example
-python src/example_bivariate_analysis.py
+# Cross-validation
+cv = CrossValidator(n_folds=5, random_state=42)
+cv_results = cv.cross_validate(baseline, split_result.X_train, split_result.y_train)
+
+# Compare models
+comparator = ModelComparator(primary_metric='f1', interpretability_weight=0.3)
+comparison_results = comparator.compare_models([
+    ModelComparisonEntry('Logistic Regression', 'baseline', 
+                        baseline_results.test_metrics, interpretability_score=1.0),
+    ModelComparisonEntry('Random Forest', 'random_forest',
+                        ensemble_results.test_metrics, interpretability_score=0.6)
+])
 ```
 
-### Running Notebooks
+## Project Structure
 
-Navigate to the `notebooks/` directory and open the Jupyter notebooks:
-
-- **EDA Notebooks**: Start with `eda-fraud-data.ipynb` or `eda-creditcard.ipynb` to explore your datasets
-- **Feature Engineering**: Use `feature-engineering.ipynb` to create and select features
-- **Modeling**: Train models using `modeling.ipynb`
-- **Explainability**: Analyze model decisions with `shap-explainability.ipynb`
-
-### Running Tests
-
-Execute the test suite:
-```bash
-pytest tests/ -v
+```
+fraud-shield-ml/
+├── src/                          # Production-ready modules
+│   ├── data_loader.py           # Data loading with validation
+│   ├── preprocessing.py         # Preprocessing & feature engineering
+│   ├── analysis.py              # Risk pattern analysis
+│   ├── data_preparation.py      # OOP data splitting & feature separation
+│   ├── baseline_model.py        # Logistic Regression baseline
+│   ├── ensemble_model.py        # Random Forest, XGBoost, LightGBM
+│   ├── cross_validation.py      # Stratified K-Fold CV
+│   └── model_comparison.py      # Model comparison & selection
+├── notebooks/                   # Jupyter notebooks for exploration
+├── tests/                       # Unit tests
+├── scripts/                     # Utility scripts
+└── requirements.txt            # Dependencies
 ```
 
-With coverage:
+## Example Scripts
+
 ```bash
-pytest tests/ --cov=src --cov-report=html
+# Data preparation example
+python src/example_data_preparation.py
+
+# Baseline model training
+python src/example_baseline_model.py
+
+# Ensemble model with hyperparameter tuning
+python src/example_ensemble_model.py
+
+# Cross-validation
+python src/example_cross_validation.py
+
+# Model comparison
+python src/example_model_comparison.py
 ```
 
-## 🔍 Model Explainability & Risk Analysis
+## Data Analysis & Preprocessing
 
-### Model Explainability
+### Risk Pattern Analysis
 
-This project emphasizes model interpretability using SHAP (SHapley Additive exPlanations) values. The `shap-explainability.ipynb` notebook demonstrates how to:
+The `analysis` module provides targeted bivariate analyses to identify high-risk patterns:
 
-- Understand feature importance
-- Explain individual predictions
-- Visualize model decision-making process
-- Build trust in fraud detection systems
-
-### Risk Analysis
-
-The project includes comprehensive bivariate risk analysis capabilities to identify high-risk patterns:
-
-- **Amount vs Fraud**: Identifies high-risk transaction amounts requiring additional scrutiny
-- **Device vs Fraud**: Detects devices associated with elevated fraud rates
-- **Source vs Fraud**: Analyzes fraud rates by traffic source (SEO, Ads, Direct, etc.)
-- **Browser vs Fraud**: Identifies browsers linked to potential bot activity or automated fraud
+- **Amount vs Fraud**: Identifies high-risk transaction amounts
+- **Device vs Fraud**: Detects devices with elevated fraud rates
+- **Source vs Fraud**: Analyzes fraud rates by traffic source
+- **Browser vs Fraud**: Identifies browsers linked to automated fraud
 
 Each analysis provides:
 - Statistical validation with significance testing
 - Risk level classifications (CRITICAL, HIGH, MODERATE, LOW)
 - Narrative interpretations for stakeholders
-- Actionable recommendations for fraud prevention
-- Professional visualizations for presentations
+- Actionable recommendations
 
-## 📈 Performance Metrics
+### Preprocessing Features
 
-The project focuses on metrics critical for fraud detection:
+- **Missing Value Handling**: Multiple strategies (drop, fill, forward_fill)
+- **Feature Engineering**: Transaction velocity features (1h, 24h windows)
+- **Categorical Encoding**: Label encoding and one-hot encoding
+- **Feature Scaling**: StandardScaler and MinMaxScaler
+- **Imbalanced Data**: SMOTE, undersampling, and combined strategies
+- **Reproducible Pipelines**: Scikit-learn compatible preprocessing pipelines
 
-- **Precision & Recall**: Balancing false positives and false negatives
+## Model Evaluation
+
+The project emphasizes metrics critical for fraud detection:
+
+- **AUC-PR** (Average Precision): Preferred for imbalanced datasets
 - **F1-Score**: Harmonic mean of precision and recall
-- **ROC-AUC**: Overall model performance
-- **PR-AUC**: Performance on imbalanced datasets
+- **ROC-AUC**: Overall discriminative ability
 - **Confusion Matrix**: Detailed classification breakdown
 
-### Risk Analysis Metrics
+All models support cross-validation with mean ± standard deviation reporting for reliable performance estimation.
 
-The risk analysis module provides additional metrics for stakeholder reporting:
+## Model Selection
 
-- **Risk Ratios**: Comparative analysis of fraud rates across different dimensions
-- **Statistical Significance**: P-values and confidence intervals for risk patterns
-- **Risk Level Classifications**: Standardized risk assessments for prioritization
-- **Volume Impact**: Transaction volume analysis for high-risk patterns
+The `ModelComparator` class enables intelligent model selection by:
 
-## 🤝 Contributing
+- **Side-by-side comparison** of all models
+- **Weighted scoring** balancing performance and interpretability
+- **Automatic justification** for best model selection
+- **Cross-validation integration** for robust evaluation
 
-Contributions are welcome! We appreciate your help in making Fraud Shield ML better.
+```python
+# Performance-focused (70% performance, 30% interpretability)
+comparator = ModelComparator(
+    primary_metric='f1',
+    interpretability_weight=0.3,
+    performance_weight=0.7
+)
+```
 
-Please read our [Contributing Guidelines](CONTRIBUTING.md) for comprehensive details on:
-- **Development Workflow**: How to set up your development environment
-- **Coding Standards**: Code style, documentation, and best practices
-- **Testing Requirements**: Writing and running tests
-- **Pull Request Process**: How to submit contributions
-- **Project Structure**: Where to add new code and features
+## Contributing
 
-**Quick Start for Contributors:**
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-1. **Fork the repository** and clone your fork
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Make your changes** with proper error handling, validation, and tests
-4. **Follow coding standards** (see CONTRIBUTING.md)
-5. **Write/update tests** to ensure your code works correctly
-6. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-7. **Push to the branch** (`git push origin feature/amazing-feature`)
-8. **Open a Pull Request** with a clear description of changes
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-For more details, see [CONTRIBUTING.md](CONTRIBUTING.md).
+## License
 
-## 📝 License
+This project is part of a training portfolio. See repository for license information.
 
-This project is part of a training portfolio. Please refer to the repository for license information.
-
-## 👤 Author
+## Author
 
 **Haben Eyasu**
 
 - GitHub: [@habeneyasu](https://github.com/habeneyasu)
 
-
-## 📚 Additional Resources
-
-- **Documentation**: See individual module docstrings for detailed function documentation
-- **Examples**: Check `src/example_usage.py` and `src/example_bivariate_analysis.py` for usage examples
-- **Contributing**: Read [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines
-- **Notebooks**: Explore Jupyter notebooks in `notebooks/` for detailed analysis workflows
-
 ---
 
-**Note**: This project is designed for educational and portfolio purposes, demonstrating expertise in machine learning, fraud detection, explainable AI, and risk analysis for e-commerce and banking applications. All code includes comprehensive error handling, validation checks, and is production-ready.
+**Note**: This project demonstrates production-ready machine learning practices for fraud detection, including object-oriented design, comprehensive evaluation, and model interpretability considerations.
