@@ -147,10 +147,24 @@ fraud-shield-ml/
 │   ├── cross_validation.py      # Stratified K-Fold CV
 │   └── model_comparison.py      # Model comparison & selection
 ├── notebooks/                   # Jupyter notebooks for exploration
-├── tests/                       # Unit tests
+├── tests/                       # Unit tests (pytest)
+├── models/                      # Saved model artifacts (.joblib, .pkl)
+├── reports/                     # Generated comparison reports (text, JSON)
 ├── scripts/                     # Utility scripts
+├── visualizations/              # Generated visualization images
 └── requirements.txt            # Dependencies
 ```
+
+### Directory Descriptions
+
+- **`src/`**: Production-ready Python modules with comprehensive error handling. All reusable functionality lives here.
+- **`notebooks/`**: Jupyter notebooks for exploratory data analysis, feature engineering, and experimentation.
+- **`tests/`**: Unit tests for all modules. Run with `pytest tests/ -v`. See `tests/README.md` for details.
+- **`models/`**: Saved trained model artifacts. Models are saved as `.joblib` or `.pkl` files. This directory is gitignored. See `models/README.md` for usage.
+- **`reports/`**: Generated model comparison reports and analysis outputs. Contains text and JSON reports from comprehensive model comparison scripts. This directory is gitignored (except README.md). See `reports/README.md` for details.
+- **`scripts/`**: Utility scripts for automation tasks (model comparison, visualization generation, etc.).
+- **`visualizations/`**: Generated visualization images (plots, charts, heatmaps) from data analysis and model evaluation.
+- **`data/`**: Data directory (gitignored). Raw data in `raw/`, processed data in `processed/`.
 
 ## Example Scripts
 
@@ -169,6 +183,10 @@ python src/example_cross_validation.py
 
 # Model comparison
 python src/example_model_comparison.py
+
+# Comprehensive model comparison with detailed reporting
+python scripts/comprehensive_model_comparison.py --dataset ecommerce
+python scripts/comprehensive_model_comparison.py --dataset banking
 ```
 
 ## Data Analysis & Preprocessing
@@ -224,6 +242,32 @@ comparator = ModelComparator(
     interpretability_weight=0.3,
     performance_weight=0.7
 )
+```
+
+### Comprehensive Model Comparison Script
+
+The `scripts/comprehensive_model_comparison.py` script provides a complete workflow:
+
+1. **Trains multiple models**: Baseline (Logistic Regression) and ensemble models (Random Forest, XGBoost, LightGBM)
+2. **Performs cross-validation**: Stratified K-Fold (k=5) on all models with mean ± std reporting
+3. **Side-by-side comparison**: Tabulates all metrics in a comprehensive table
+4. **Programmatic documentation**: Generates detailed text and JSON reports
+5. **Selection rationale**: Documents which model is selected and why, considering both performance and interpretability
+
+**Generated Reports:**
+- **Text Report**: Detailed human-readable report with justification and recommendations
+- **JSON Summary**: Machine-readable summary for programmatic access
+
+**Usage:**
+```bash
+# Run comprehensive comparison for e-commerce dataset
+python scripts/comprehensive_model_comparison.py --dataset ecommerce
+
+# Run for banking dataset
+python scripts/comprehensive_model_comparison.py --dataset banking
+
+# Specify output directory
+python scripts/comprehensive_model_comparison.py --dataset ecommerce --output-dir reports
 ```
 
 ## Contributing
