@@ -82,6 +82,13 @@ from .model_comparison import (
     ModelComparisonResults
 )
 
+from .model_explainability import (
+    ModelExplainability,
+    FeatureImportanceResults,
+    ExplainabilityResults,
+    CaseStudyInstance
+)
+
 __all__ = [
     # Modules
     'data_loader',
@@ -150,6 +157,12 @@ __all__ = [
     'ModelComparator',
     'ModelComparisonEntry',
     'ModelComparisonResults',
+    
+    # Model explainability classes
+    'ModelExplainability',
+    'FeatureImportanceResults',
+    'ExplainabilityResults',
+    'CaseStudyInstance',
 ]
 
 __version__ = '1.0.0'

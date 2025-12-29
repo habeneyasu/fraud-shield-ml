@@ -20,6 +20,7 @@ Fraud Shield ML provides an end-to-end pipeline for building, training, and depl
 - ✅ **Cross-validation** with Stratified K-Fold for reliable performance estimation
 - 🏆 **Model comparison** considering both performance and interpretability
 - 📈 **Comprehensive metrics** (AUC-PR, F1-Score, ROC-AUC, Confusion Matrix)
+- 🧠 **Model Explainability**: SHAP analysis, feature importance, and actionable business recommendations
 
 ## Features
 
@@ -28,7 +29,7 @@ Fraud Shield ML provides an end-to-end pipeline for building, training, and depl
 - **Business-Aligned**: Modules designed to address specific business objectives (see [BUSINESS_OBJECTIVES.md](BUSINESS_OBJECTIVES.md))
 - **Data Analysis**: Risk pattern analysis with statistical validation and stakeholder-friendly interpretations
 - **Advanced Preprocessing**: Feature engineering, scaling, encoding, and imbalanced data handling
-- **Model Interpretability**: Built-in interpretability scoring for regulatory compliance
+- **Model Explainability**: SHAP analysis, feature importance comparison, and actionable business recommendations
 - **Comprehensive Evaluation**: Multiple metrics with cross-validation support
 - **Modular Architecture**: Clean separation of concerns for maintainability
 - **Test Coverage**: Explicit unit tests for all core modules
@@ -37,6 +38,7 @@ Fraud Shield ML provides an end-to-end pipeline for building, training, and depl
 
 - **Python 3.10+**
 - **ML Libraries**: scikit-learn, XGBoost, LightGBM
+- **Explainability**: SHAP (SHapley Additive exPlanations)
 - **Data Processing**: pandas, numpy
 - **Visualization**: matplotlib, seaborn
 - **Testing**: pytest
@@ -137,6 +139,37 @@ comparison_results = comparator.compare_models([
 ])
 ```
 
+### Model Explainability
+
+```python
+from src.model_explainability import ModelExplainability
+
+# Initialize explainer
+explainer = ModelExplainability(
+    model=ensemble.model,
+    feature_names=split_result.X_train.columns.tolist()
+)
+
+# Extract feature importance
+builtin_importance = explainer.extract_feature_importance()
+
+# Compute SHAP values
+shap_values, _ = explainer.compute_shap_values(X_test, sample_size=100)
+
+# Generate SHAP summary plot
+explainer.generate_shap_summary_plot(shap_values, X_test)
+
+# Generate interpretation report
+interpretation_report = explainer.generate_interpretation_report(
+    builtin_importance, shap_values, X_test, top_n=5
+)
+
+# Generate business recommendations
+recommendations = explainer.generate_business_recommendations(
+    interpretation_report, dataset_type='ecommerce', min_recommendations=3
+)
+```
+
 ## Project Structure
 
 ```
@@ -149,7 +182,8 @@ fraud-shield-ml/
 │   ├── baseline_model.py        # Logistic Regression baseline
 │   ├── ensemble_model.py        # Random Forest, XGBoost, LightGBM
 │   ├── cross_validation.py      # Stratified K-Fold CV
-│   └── model_comparison.py      # Model comparison & selection
+│   ├── model_comparison.py      # Model comparison & selection
+│   └── model_explainability.py  # SHAP analysis & business recommendations
 ├── notebooks/                   # Jupyter notebooks for exploration
 ├── tests/                       # Unit tests (pytest)
 ├── models/                      # Saved model artifacts (.joblib, .pkl)
@@ -191,6 +225,12 @@ python src/example_model_comparison.py
 # Comprehensive model comparison with detailed reporting
 python scripts/comprehensive_model_comparison.py --dataset ecommerce
 python scripts/comprehensive_model_comparison.py --dataset banking
+
+# Model explainability
+python src/example_feature_importance.py
+python src/example_shap_analysis.py
+python src/example_interpretation.py
+python src/example_business_recommendations.py
 ```
 
 ## Data Analysis & Preprocessing
@@ -247,6 +287,33 @@ comparator = ModelComparator(
     performance_weight=0.7
 )
 ```
+
+## Model Explainability
+
+The `ModelExplainability` class provides comprehensive model interpretation:
+
+### Features
+
+- **Feature Importance**: Extract and visualize built-in feature importance from ensemble models
+- **SHAP Analysis**: Generate SHAP summary plots and force plots for individual predictions
+- **Case Studies**: Analyze True Positives, False Positives, and False Negatives with SHAP explanations
+- **Importance Comparison**: Compare SHAP importance with built-in feature importance
+- **Top Drivers**: Identify top 5 drivers of fraud predictions
+- **Business Recommendations**: Generate actionable recommendations connected to specific SHAP insights
+
+### Key Capabilities
+
+1. **Feature Importance Baseline**: Extract built-in importance and visualize top features
+2. **SHAP Summary Plots**: Global feature importance visualization
+3. **SHAP Force Plots**: Individual prediction explanations for TP, FP, FN cases
+4. **Interpretation**: Compare methods, identify top drivers, explain surprising findings
+5. **Business Recommendations**: Actionable insights like "Transactions within X hours of signup should receive additional verification"
+
+### Example Output
+
+- **Visualizations**: Feature importance charts, SHAP summary plots, importance comparisons
+- **Reports**: Interpretation reports with top drivers and surprising findings
+- **Recommendations**: Prioritized business recommendations with expected impact estimates
 
 ### Comprehensive Model Comparison Script
 
@@ -306,6 +373,7 @@ Test coverage includes:
 - Baseline and ensemble model training
 - Cross-validation functionality
 - Model comparison and selection
+- Model explainability and SHAP analysis
 
 ## Contributing
 
