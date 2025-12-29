@@ -942,4 +942,499 @@ class ModelExplainability:
                 raise RuntimeError(error_msg) from e
         
         return save_path
+    
+    def compute_shap_feature_importance(
+        self,
+        shap_values: np.ndarray
+    ) -> pd.DataFrame:
+        """
+        Compute feature importance from SHAP values (mean absolute SHAP values).
+        
+        Parameters:
+        -----------
+        shap_values : np.ndarray
+            SHAP values array (samples x features)
+        
+        Returns:
+        --------
+        pd.DataFrame
+            DataFrame with features and their SHAP-based importance scores,
+            sorted by importance
+        """
+        logger.info("Computing SHAP-based feature importance...")
+        
+        # Compute mean absolute SHAP values per feature
+        shap_importance = np.abs(shap_values).mean(axis=0)
+        
+        # Create DataFrame
+        shap_importance_df = pd.DataFrame({
+            'feature': self.feature_names[:len(shap_importance)],
+            'shap_importance': shap_importance
+        }).sort_values('shap_importance', ascending=False)
+        
+        # Reset index
+        shap_importance_df = shap_importance_df.reset_index(drop=True)
+        
+        logger.info(f"✓ Computed SHAP importance for {len(shap_importance_df)} features")
+        logger.info(f"  Top feature: {shap_importance_df.iloc[0]['feature']} "
+                   f"(SHAP importance: {shap_importance_df.iloc[0]['shap_importance']:.4f})")
+        
+        return shap_importance_df
+    
+    def compare_importance_methods(
+        self,
+        builtin_importance: FeatureImportanceResults,
+        shap_importance_df: pd.DataFrame,
+        top_n: int = 10
+    ) -> pd.DataFrame:
+        """
+        Compare built-in feature importance with SHAP-based importance.
+        
+        Parameters:
+        -----------
+        builtin_importance : FeatureImportanceResults
+            Built-in feature importance results
+        shap_importance_df : pd.DataFrame
+            SHAP-based feature importance DataFrame
+        top_n : int, default 10
+            Number of top features to compare
+        
+        Returns:
+        --------
+        pd.DataFrame
+            Comparison DataFrame with both importance scores and rankings
+        """
+        logger.info("Comparing built-in and SHAP feature importance...")
+        
+        # Prepare built-in importance
+        builtin_df = builtin_importance.importance_df.copy()
+        builtin_df = builtin_df.rename(columns={'importance': 'builtin_importance'})
+        builtin_df['builtin_rank'] = range(1, len(builtin_df) + 1)
+        
+        # Prepare SHAP importance
+        shap_df = shap_importance_df.copy()
+        shap_df['shap_rank'] = range(1, len(shap_df) + 1)
+        
+        # Merge on feature names
+        comparison_df = pd.merge(
+            builtin_df[['feature', 'builtin_importance', 'builtin_rank']],
+            shap_df[['feature', 'shap_importance', 'shap_rank']],
+            on='feature',
+            how='outer'
+        )
+        
+        # Fill missing values with 0
+        comparison_df = comparison_df.fillna(0)
+        
+        # Compute rank difference
+        comparison_df['rank_difference'] = (
+            comparison_df['builtin_rank'] - comparison_df['shap_rank']
+        )
+        
+        # Normalize importance scores to 0-1 for comparison
+        if comparison_df['builtin_importance'].max() > 0:
+            comparison_df['builtin_importance_norm'] = (
+                comparison_df['builtin_importance'] / comparison_df['builtin_importance'].max()
+            )
+        else:
+            comparison_df['builtin_importance_norm'] = 0
+        
+        if comparison_df['shap_importance'].max() > 0:
+            comparison_df['shap_importance_norm'] = (
+                comparison_df['shap_importance'] / comparison_df['shap_importance'].max()
+            )
+        else:
+            comparison_df['shap_importance_norm'] = 0
+        
+        # Compute importance difference
+        comparison_df['importance_difference'] = (
+            comparison_df['builtin_importance_norm'] - comparison_df['shap_importance_norm']
+        )
+        
+        # Sort by average rank
+        comparison_df['avg_rank'] = (
+            comparison_df['builtin_rank'] + comparison_df['shap_rank']
+        ) / 2
+        comparison_df = comparison_df.sort_values('avg_rank')
+        
+        logger.info(f"✓ Compared importance for {len(comparison_df)} features")
+        
+        return comparison_df
+    
+    def identify_top_drivers(
+        self,
+        comparison_df: pd.DataFrame,
+        top_n: int = 5,
+        method: str = 'combined'
+    ) -> pd.DataFrame:
+        """
+        Identify top N drivers of fraud predictions.
+        
+        Parameters:
+        -----------
+        comparison_df : pd.DataFrame
+            Comparison DataFrame from compare_importance_methods()
+        top_n : int, default 5
+            Number of top drivers to identify
+        method : str, default 'combined'
+            Method to use: 'builtin', 'shap', or 'combined'
+            - 'builtin': Use built-in importance ranking
+            - 'shap': Use SHAP importance ranking
+            - 'combined': Use average ranking
+        
+        Returns:
+        --------
+        pd.DataFrame
+            DataFrame with top N drivers and their importance scores
+        """
+        logger.info(f"Identifying top {top_n} drivers using method: {method}")
+        
+        if method == 'builtin':
+            top_drivers = comparison_df.nsmallest(top_n, 'builtin_rank')
+        elif method == 'shap':
+            top_drivers = comparison_df.nsmallest(top_n, 'shap_rank')
+        else:  # combined
+            top_drivers = comparison_df.nsmallest(top_n, 'avg_rank')
+        
+        # Select relevant columns
+        result_df = top_drivers[[
+            'feature',
+            'builtin_importance',
+            'shap_importance',
+            'builtin_rank',
+            'shap_rank',
+            'rank_difference'
+        ]].copy()
+        
+        result_df = result_df.reset_index(drop=True)
+        result_df.index = result_df.index + 1  # Start from 1
+        result_df.index.name = 'Rank'
+        
+        logger.info(f"✓ Identified top {len(result_df)} drivers")
+        
+        return result_df
+    
+    def identify_surprising_findings(
+        self,
+        comparison_df: pd.DataFrame,
+        rank_threshold: int = 5,
+        importance_diff_threshold: float = 0.2
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Identify surprising or counterintuitive findings in feature importance.
+        
+        Parameters:
+        -----------
+        comparison_df : pd.DataFrame
+            Comparison DataFrame from compare_importance_methods()
+        rank_threshold : int, default 5
+            Threshold for considering a feature as "top" (for rank differences)
+        importance_diff_threshold : float, default 0.2
+            Threshold for normalized importance difference (0-1 scale)
+        
+        Returns:
+        --------
+        Dict[str, List[Dict[str, Any]]]
+            Dictionary with categories of surprising findings:
+            - 'high_rank_difference': Features with large rank differences
+            - 'importance_mismatch': Features with large importance differences
+            - 'shap_higher': Features ranked higher by SHAP than built-in
+            - 'builtin_higher': Features ranked higher by built-in than SHAP
+        """
+        logger.info("Identifying surprising findings...")
+        
+        findings = {
+            'high_rank_difference': [],
+            'importance_mismatch': [],
+            'shap_higher': [],
+            'builtin_higher': []
+        }
+        
+        for _, row in comparison_df.iterrows():
+            feature = row['feature']
+            rank_diff = abs(row['rank_difference'])
+            importance_diff = abs(row['importance_difference'])
+            builtin_rank = row['builtin_rank']
+            shap_rank = row['shap_rank']
+            
+            # High rank difference
+            if rank_diff >= rank_threshold:
+                findings['high_rank_difference'].append({
+                    'feature': feature,
+                    'builtin_rank': int(builtin_rank),
+                    'shap_rank': int(shap_rank),
+                    'rank_difference': int(rank_diff),
+                    'interpretation': (
+                        f"Large ranking discrepancy: "
+                        f"Built-in rank {int(builtin_rank)} vs SHAP rank {int(shap_rank)}"
+                    )
+                })
+            
+            # Importance mismatch
+            if importance_diff >= importance_diff_threshold:
+                findings['importance_mismatch'].append({
+                    'feature': feature,
+                    'builtin_importance_norm': float(row['builtin_importance_norm']),
+                    'shap_importance_norm': float(row['shap_importance_norm']),
+                    'importance_difference': float(importance_diff),
+                    'interpretation': (
+                        f"Significant importance difference: "
+                        f"Built-in {row['builtin_importance_norm']:.3f} vs "
+                        f"SHAP {row['shap_importance_norm']:.3f}"
+                    )
+                })
+            
+            # SHAP ranks higher (more important in SHAP)
+            if shap_rank < builtin_rank and rank_diff >= 3:
+                findings['shap_higher'].append({
+                    'feature': feature,
+                    'builtin_rank': int(builtin_rank),
+                    'shap_rank': int(shap_rank),
+                    'interpretation': (
+                        f"SHAP suggests this feature is more important than built-in indicates. "
+                        f"May have complex interactions or non-linear effects."
+                    )
+                })
+            
+            # Built-in ranks higher (more important in built-in)
+            if builtin_rank < shap_rank and rank_diff >= 3:
+                findings['builtin_higher'].append({
+                    'feature': feature,
+                    'builtin_rank': int(builtin_rank),
+                    'shap_rank': int(shap_rank),
+                    'interpretation': (
+                        f"Built-in importance suggests higher importance than SHAP. "
+                        f"May have consistent but smaller individual contributions."
+                    )
+                })
+        
+        # Sort findings by magnitude
+        for key in findings:
+            if findings[key]:
+                if 'rank_difference' in findings[key][0]:
+                    findings[key].sort(key=lambda x: abs(x.get('rank_difference', 0)), reverse=True)
+                elif 'importance_difference' in findings[key][0]:
+                    findings[key].sort(key=lambda x: abs(x.get('importance_difference', 0)), reverse=True)
+        
+        total_findings = sum(len(v) for v in findings.values())
+        logger.info(f"✓ Identified {total_findings} surprising findings across {len(findings)} categories")
+        
+        return findings
+    
+    def generate_interpretation_report(
+        self,
+        builtin_importance: FeatureImportanceResults,
+        shap_values: np.ndarray,
+        X: Union[pd.DataFrame, np.ndarray],
+        top_n: int = 5,
+        save_path: Optional[Union[str, Path]] = None
+    ) -> Dict[str, Any]:
+        """
+        Generate comprehensive interpretation report comparing SHAP and built-in importance.
+        
+        Parameters:
+        -----------
+        builtin_importance : FeatureImportanceResults
+            Built-in feature importance results
+        shap_values : np.ndarray
+            SHAP values array
+        X : pd.DataFrame or np.ndarray
+            Features corresponding to SHAP values
+        top_n : int, default 5
+            Number of top drivers to identify
+        save_path : str or Path, optional
+            Path to save the report. If None, creates default path
+        
+        Returns:
+        --------
+        Dict[str, Any]
+            Dictionary containing:
+            - 'top_drivers': Top N drivers DataFrame
+            - 'comparison_df': Full comparison DataFrame
+            - 'surprising_findings': Dictionary of surprising findings
+            - 'summary': Text summary of findings
+        """
+        logger.info("Generating interpretation report...")
+        
+        # Compute SHAP importance
+        shap_importance_df = self.compute_shap_feature_importance(shap_values)
+        
+        # Compare methods
+        comparison_df = self.compare_importance_methods(
+            builtin_importance,
+            shap_importance_df,
+            top_n=20  # Compare more features for better analysis
+        )
+        
+        # Identify top drivers (using combined method)
+        top_drivers = self.identify_top_drivers(
+            comparison_df,
+            top_n=top_n,
+            method='combined'
+        )
+        
+        # Identify surprising findings
+        surprising_findings = self.identify_surprising_findings(comparison_df)
+        
+        # Generate summary text
+        summary_lines = []
+        summary_lines.append("=" * 80)
+        summary_lines.append("FEATURE IMPORTANCE INTERPRETATION REPORT")
+        summary_lines.append("=" * 80)
+        summary_lines.append(f"\nTop {top_n} Drivers of Fraud Predictions (Combined Ranking):")
+        summary_lines.append("-" * 80)
+        
+        for idx, row in top_drivers.iterrows():
+            summary_lines.append(
+                f"{idx}. {row['feature']}\n"
+                f"   Built-in Rank: {int(row['builtin_rank'])}, "
+                f"SHAP Rank: {int(row['shap_rank'])}\n"
+                f"   Built-in Importance: {row['builtin_importance']:.4f}, "
+                f"SHAP Importance: {row['shap_importance']:.4f}"
+            )
+        
+        summary_lines.append("\n" + "=" * 80)
+        summary_lines.append("SURPRISING FINDINGS")
+        summary_lines.append("=" * 80)
+        
+        if surprising_findings['high_rank_difference']:
+            summary_lines.append("\n1. High Rank Differences:")
+            for finding in surprising_findings['high_rank_difference'][:5]:  # Top 5
+                summary_lines.append(f"   - {finding['feature']}: {finding['interpretation']}")
+        
+        if surprising_findings['shap_higher']:
+            summary_lines.append("\n2. Features More Important in SHAP:")
+            for finding in surprising_findings['shap_higher'][:5]:
+                summary_lines.append(f"   - {finding['feature']}: {finding['interpretation']}")
+        
+        if surprising_findings['builtin_higher']:
+            summary_lines.append("\n3. Features More Important in Built-in:")
+            for finding in surprising_findings['builtin_higher'][:5]:
+                summary_lines.append(f"   - {finding['feature']}: {finding['interpretation']}")
+        
+        summary_lines.append("\n" + "=" * 80)
+        
+        summary_text = "\n".join(summary_lines)
+        
+        # Save report if path provided
+        if save_path:
+            save_path = Path(save_path)
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(save_path, 'w') as f:
+                f.write(summary_text)
+                f.write("\n\n" + "=" * 80 + "\n")
+                f.write("DETAILED COMPARISON TABLE\n")
+                f.write("=" * 80 + "\n\n")
+                f.write(comparison_df.head(20).to_string())
+            
+            logger.info(f"✓ Interpretation report saved to: {save_path}")
+        
+        report = {
+            'top_drivers': top_drivers,
+            'comparison_df': comparison_df,
+            'surprising_findings': surprising_findings,
+            'summary': summary_text
+        }
+        
+        return report
+    
+    def visualize_importance_comparison(
+        self,
+        comparison_df: pd.DataFrame,
+        top_n: int = 10,
+        save_path: Optional[Union[str, Path]] = None,
+        title: Optional[str] = None
+    ) -> Path:
+        """
+        Visualize comparison between built-in and SHAP feature importance.
+        
+        Parameters:
+        -----------
+        comparison_df : pd.DataFrame
+            Comparison DataFrame from compare_importance_methods()
+        top_n : int, default 10
+            Number of top features to visualize
+        save_path : str or Path, optional
+            Path to save the plot. If None, creates default path
+        title : str, optional
+            Custom title for the plot
+        
+        Returns:
+        --------
+        Path
+            Path to saved visualization file
+        """
+        logger.info("Creating importance comparison visualization...")
+        
+        # Get top N features by average rank
+        top_features = comparison_df.head(top_n).copy()
+        
+        # Create figure with subplots
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
+        
+        # Plot 1: Side-by-side bar chart
+        x = np.arange(len(top_features))
+        width = 0.35
+        
+        ax1.bar(x - width/2, top_features['builtin_importance_norm'], 
+                width, label='Built-in Importance', alpha=0.8, color='steelblue')
+        ax1.bar(x + width/2, top_features['shap_importance_norm'], 
+                width, label='SHAP Importance', alpha=0.8, color='coral')
+        
+        ax1.set_xlabel('Features', fontsize=12, fontweight='bold')
+        ax1.set_ylabel('Normalized Importance', fontsize=12, fontweight='bold')
+        ax1.set_title('Built-in vs SHAP Feature Importance Comparison', 
+                     fontsize=14, fontweight='bold', pad=15)
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(top_features['feature'], rotation=45, ha='right')
+        ax1.legend()
+        ax1.grid(axis='y', alpha=0.3)
+        
+        # Plot 2: Rank comparison scatter plot
+        ax2.scatter(top_features['builtin_rank'], top_features['shap_rank'],
+                   s=100, alpha=0.6, c=top_features['shap_importance_norm'],
+                   cmap='viridis', edgecolors='black', linewidth=1.5)
+        
+        # Add diagonal line (perfect agreement)
+        max_rank = max(top_features[['builtin_rank', 'shap_rank']].max())
+        ax2.plot([1, max_rank], [1, max_rank], 'r--', alpha=0.5, label='Perfect Agreement')
+        
+        # Add feature labels
+        for idx, row in top_features.iterrows():
+            ax2.annotate(row['feature'], 
+                        (row['builtin_rank'], row['shap_rank']),
+                        fontsize=8, alpha=0.7)
+        
+        ax2.set_xlabel('Built-in Rank', fontsize=12, fontweight='bold')
+        ax2.set_ylabel('SHAP Rank', fontsize=12, fontweight='bold')
+        ax2.set_title('Rank Comparison: Built-in vs SHAP', 
+                     fontsize=14, fontweight='bold', pad=15)
+        ax2.legend()
+        ax2.grid(alpha=0.3)
+        ax2.invert_xaxis()
+        ax2.invert_yaxis()
+        
+        # Set overall title
+        if title:
+            fig.suptitle(title, fontsize=16, fontweight='bold', y=1.02)
+        else:
+            fig.suptitle(f'Feature Importance Comparison (Top {top_n} Features)',
+                        fontsize=16, fontweight='bold', y=1.02)
+        
+        plt.tight_layout()
+        
+        # Save figure
+        if save_path is None:
+            save_path = Path('visualizations') / 'importance_comparison.png'
+        else:
+            save_path = Path(save_path)
+        
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor='white')
+        plt.close()
+        
+        logger.info(f"✓ Importance comparison visualization saved to: {save_path}")
+        
+        return save_path
 
