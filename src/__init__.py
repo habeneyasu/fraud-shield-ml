@@ -85,7 +85,8 @@ from .model_comparison import (
 from .model_explainability import (
     ModelExplainability,
     FeatureImportanceResults,
-    ExplainabilityResults
+    ExplainabilityResults,
+    CaseStudyInstance
 )
 
 __all__ = [
@@ -161,6 +162,7 @@ __all__ = [
     'ModelExplainability',
     'FeatureImportanceResults',
     'ExplainabilityResults',
+    'CaseStudyInstance',
 ]
 
 __version__ = '1.0.0'
